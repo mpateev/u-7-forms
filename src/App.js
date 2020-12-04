@@ -1,19 +1,27 @@
 
 import React from "react";
-import axios from 'axios';
+import unsplash from "./api/unsplash";
+import ImageList from "./components/ImageList";
 import SearchBar from "./components/SearchBar";
 
 export default class App extends React.Component {
+  state = { images: [] }; // assign proper empty object or array
 
-  onSearchSubmit(term) {
-    console.log('App says:', term)
-  }
+  onSearchSubmit = async (term) => {
+    const response = await unsplash.get("/search/photos", {
+      params: { query: term },
+    });
+
+    this.setState({ images: response.data.results });;
+  };
   render() {
-      return (
-        <div className="ui container" style={{ marginTop: "2rem" }}>
-          <SearchBar callback={this.onSearchSubmit}/>
-        </div>
-      );
+    return (
+      <div className="ui container" style={{ marginTop: "2rem" }}>
+        <SearchBar callback={this.onSearchSubmit} />
+        <p>Found: {this.state.images.length}</p>
+        <ImageList images={this.state.images} />
+      </div>
+    );
   }
 }
 
